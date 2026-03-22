@@ -55,3 +55,5 @@ bash scripts/check.sh
 - Run with a user that has `sudo` access.
 - Script is idempotent and safe to re-run.
 - Includes Visual Studio Code (`code`) from the official Microsoft apt repository.
+- Includes Google Chrome (`google-chrome-stable`) from the official Google apt repository.
+- Includes Bitwarden (`bitwarden`) from the official Bitwarden apt repository.

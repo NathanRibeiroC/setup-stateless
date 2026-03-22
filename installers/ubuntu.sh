@@ -98,6 +98,44 @@ install_vscode() {
   $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y code
 }
 
+install_google_chrome() {
+  local keyring_dir="/etc/apt/keyrings"
+  local keyring_file="${keyring_dir}/google-linux.gpg"
+  local source_file="/etc/apt/sources.list.d/google-chrome.list"
+  local arch
+
+  arch="$(dpkg --print-architecture)"
+
+  log "Configuring Google Chrome official repository..."
+  $SUDO install -d -m 0755 "$keyring_dir"
+  curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor | $SUDO tee "$keyring_file" >/dev/null
+  $SUDO chmod a+r "$keyring_file"
+  echo "deb [arch=${arch} signed-by=${keyring_file}] https://dl.google.com/linux/chrome/deb/ stable main" | $SUDO tee "$source_file" >/dev/null
+
+  log "Installing Google Chrome..."
+  $SUDO apt-get update -y
+  $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y google-chrome-stable
+}
+
+install_bitwarden() {
+  local keyring_dir="/etc/apt/keyrings"
+  local keyring_file="${keyring_dir}/bitwarden.gpg"
+  local source_file="/etc/apt/sources.list.d/bitwarden.list"
+  local arch
+
+  arch="$(dpkg --print-architecture)"
+
+  log "Configuring Bitwarden official repository..."
+  $SUDO install -d -m 0755 "$keyring_dir"
+  curl -fsSL https://deb.bitwarden.com/bitwarden.asc | gpg --dearmor | $SUDO tee "$keyring_file" >/dev/null
+  $SUDO chmod a+r "$keyring_file"
+  echo "deb [arch=${arch} signed-by=${keyring_file}] https://deb.bitwarden.com/ stable main" | $SUDO tee "$source_file" >/dev/null
+
+  log "Installing Bitwarden..."
+  $SUDO apt-get update -y
+  $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y bitwarden
+}
+
 main() {
   require_cmd apt-get
   require_cmd dpkg
@@ -113,6 +151,8 @@ main() {
   apt_update_if_needed
   install_packages
   install_vscode
+  install_google_chrome
+  install_bitwarden
 
   # Ensure pipx shims are ready for the current user.
   if command -v pipx >/dev/null 2>&1; then

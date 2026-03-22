@@ -12,6 +12,8 @@ required=(
   python3
   pipx
   code
+  google-chrome
+  bitwarden
 )
 missing=0
 
