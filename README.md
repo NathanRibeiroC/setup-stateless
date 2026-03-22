@@ -42,6 +42,14 @@ bash <(curl -fsSL https://raw.githubusercontent.com/NathanRibeiroC/setup-statele
 - `installers/fedora.sh` (future)
 - `installers/gentoo.sh` (future)
 
+## Installed tools (Ubuntu)
+
+- Core CLI: `curl`, `wget`, `git`, `jq`, `ripgrep`, `fd-find`, `tmux`, `tree`, `zsh`, `xclip`
+- Build/tooling: `build-essential`, `make`, `zip`, `unzip`
+- Python: `python3`, `python3-pip`, `pipx`
+- Base system packages: `ca-certificates`, `gnupg`, `lsb-release`, `software-properties-common`
+- Desktop apps: `code`, `google-chrome-stable`, `bitwarden`
+
 ## Local usage
 
 ```bash
@@ -54,6 +62,3 @@ bash scripts/check.sh
 - Only Ubuntu is currently implemented.
 - Run with a user that has `sudo` access.
 - Script is idempotent and safe to re-run.
-- Includes Visual Studio Code (`code`) from the official Microsoft apt repository.
-- Includes Google Chrome (`google-chrome-stable`) from the official Google apt repository.
-- Includes Bitwarden (`bitwarden`) from the official Bitwarden apt repository.
