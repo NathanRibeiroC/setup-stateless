@@ -1,24 +1,30 @@
 # setup-stateless
 
-Projeto base para automatizar setup de maquina Ubuntu de forma idempotente e sem estado local complexo.
+Stateless Ubuntu bootstrap focused on speed and repeatability.
 
-## Objetivo
-
-Provisionar ferramentas de desenvolvimento e preferencias essenciais usando script versionado.
-
-## Estrutura
-
-- `scripts/bootstrap.sh`: instala dependencias basicas e configura o ambiente.
-- `scripts/check.sh`: valida comandos essenciais apos setup.
-
-## Uso
+## One-liner (run directly from GitHub)
 
 ```bash
-bash scripts/bootstrap.sh
+bash <(curl -fsSL https://raw.githubusercontent.com/NathanRibeiroC/setup-stateless/main/install-ubuntu.sh)
+```
+
+## What it installs
+
+- Core tooling: `curl`, `wget`, `git`, `jq`
+- Build tooling: `build-essential`, `make`, `zip`, `unzip`
+- Dev CLI: `ripgrep`, `fd-find`, `tmux`, `tree`, `zsh`
+- Python basics: `python3`, `python3-pip`, `pipx`
+- Base packages: `ca-certificates`, `gnupg`, `software-properties-common`, `lsb-release`, `xclip`
+
+## Local usage
+
+```bash
+bash install-ubuntu.sh
 bash scripts/check.sh
 ```
 
-## Observacoes
+## Notes
 
-- O script foi pensado para Ubuntu.
-- Execute com usuario com permissao de `sudo`.
+- Ubuntu only.
+- Run with a user that has `sudo` access.
+- Script is idempotent and safe to re-run.
