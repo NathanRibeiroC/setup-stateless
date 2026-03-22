@@ -11,6 +11,7 @@ required=(
   zsh
   python3
   pipx
+  code
 )
 missing=0
 

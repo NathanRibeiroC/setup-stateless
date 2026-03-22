@@ -2,6 +2,27 @@
 
 Stateless Linux bootstrap focused on speed and repeatability.
 
+## Prerequisites
+
+Before running the installer, make sure your GitHub access is configured from the terminal:
+
+1. Configure an SSH key and add it to GitHub.
+```bash
+ssh-keygen -t ed25519 -C "your_email@example.com"
+gh auth login
+gh ssh-key add ~/.ssh/id_ed25519.pub --title "$(hostname)-$(date +%F)"
+```
+2. Configure a GPG key and add it to GitHub for signed commits.
+```bash
+gpg --full-generate-key
+gpg --list-secret-keys --keyid-format LONG
+gpg --armor --export <YOUR_KEY_ID> | gh gpg-key add -
+```
+3. Ensure GitHub CLI authentication is active.
+```bash
+gh auth status
+```
+
 ## One-liner (run directly from GitHub)
 
 ```bash
@@ -33,3 +54,4 @@ bash scripts/check.sh
 - Only Ubuntu is currently implemented.
 - Run with a user that has `sudo` access.
 - Script is idempotent and safe to re-run.
+- Includes Visual Studio Code (`code`) from the official Microsoft apt repository.

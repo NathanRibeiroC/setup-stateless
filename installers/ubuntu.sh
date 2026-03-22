@@ -79,9 +79,30 @@ install_packages() {
   $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y "${packages[@]}"
 }
 
+install_vscode() {
+  local keyring_dir="/etc/apt/keyrings"
+  local keyring_file="${keyring_dir}/packages.microsoft.gpg"
+  local source_file="/etc/apt/sources.list.d/vscode.list"
+  local arch
+
+  arch="$(dpkg --print-architecture)"
+
+  log "Configuring Visual Studio Code official repository..."
+  $SUDO install -d -m 0755 "$keyring_dir"
+  curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | $SUDO tee "$keyring_file" >/dev/null
+  $SUDO chmod a+r "$keyring_file"
+  echo "deb [arch=${arch} signed-by=${keyring_file}] https://packages.microsoft.com/repos/code stable main" | $SUDO tee "$source_file" >/dev/null
+
+  log "Installing Visual Studio Code..."
+  $SUDO apt-get update -y
+  $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y code
+}
+
 main() {
   require_cmd apt-get
   require_cmd dpkg
+  require_cmd curl
+  require_cmd gpg
 
   if ! is_ubuntu; then
     echo "This installer supports Ubuntu systems only."
@@ -91,6 +112,7 @@ main() {
   log "Starting Ubuntu stateless setup..."
   apt_update_if_needed
   install_packages
+  install_vscode
 
   # Ensure pipx shims are ready for the current user.
   if command -v pipx >/dev/null 2>&1; then
