@@ -11,9 +11,12 @@ required_cmds=(
   zsh
   python3
   pipx
+  node
+  npm
   nvim
   code
   google-chrome
+  brave-browser
   bitwarden
   libreoffice
   snap
@@ -34,6 +37,13 @@ for cmd in "${required_cmds[@]}"; do
     echo "OK command: $cmd"
   fi
 done
+
+if command -v mise >/dev/null 2>&1 || [[ -x "${HOME}/.local/bin/mise" ]]; then
+  echo "OK command: mise"
+else
+  echo "Missing command: mise"
+  missing=1
+fi
 
 for pkg in "${required_snaps[@]}"; do
   if ! snap list "$pkg" >/dev/null 2>&1; then

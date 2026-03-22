@@ -119,6 +119,19 @@ install_google_chrome() {
   $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y google-chrome-stable
 }
 
+install_brave() {
+  local keyring_file="/usr/share/keyrings/brave-browser-archive-keyring.gpg"
+  local source_file="/etc/apt/sources.list.d/brave-browser-release.list"
+
+  log "Configuring Brave Browser official repository..."
+  $SUDO curl -fsSLo "$keyring_file" https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
+  echo "deb [signed-by=${keyring_file}] https://brave-browser-apt-release.s3.brave.com/ stable main" | $SUDO tee "$source_file" >/dev/null
+
+  log "Installing Brave Browser..."
+  $SUDO apt-get update -y
+  $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y brave-browser
+}
+
 install_bitwarden() {
   local keyring_dir="/etc/apt/keyrings"
   local keyring_file="${keyring_dir}/bitwarden.gpg"
@@ -158,6 +171,50 @@ get_target_home() {
     printf '/root\n'
   else
     getent passwd "$target_user" | cut -d: -f6
+  fi
+}
+
+install_node() {
+  local target_user target_home nvm_dir install_cmd
+
+  target_user="$(get_target_user)"
+  target_home="$(get_target_home "$target_user")"
+  nvm_dir="${target_home}/.nvm"
+
+  log "Installing Node.js via nvm for user ${target_user}..."
+
+  install_cmd="export NVM_DIR=\"${nvm_dir}\"; \
+if [[ ! -s \"${nvm_dir}/nvm.sh\" ]]; then \
+  curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash; \
+fi; \
+. \"${nvm_dir}/nvm.sh\"; \
+nvm install node; \
+nvm alias default node"
+
+  if [[ "$target_user" == "root" ]]; then
+    bash -lc "$install_cmd"
+  else
+    $SUDO -u "$target_user" bash -lc "$install_cmd"
+  fi
+}
+
+install_mise() {
+  local target_user target_home install_cmd
+
+  target_user="$(get_target_user)"
+  target_home="$(get_target_home "$target_user")"
+
+  log "Installing mise for user ${target_user}..."
+
+  install_cmd="mkdir -p \"${target_home}/.local/bin\"; \
+if [[ ! -x \"${target_home}/.local/bin/mise\" ]]; then \
+  curl -fsSL https://mise.run | sh; \
+fi"
+
+  if [[ "$target_user" == "root" ]]; then
+    bash -lc "$install_cmd"
+  else
+    $SUDO -u "$target_user" bash -lc "$install_cmd"
   fi
 }
 
@@ -202,8 +259,11 @@ main() {
   install_packages
   install_vscode
   install_google_chrome
+  install_brave
   install_bitwarden
   install_snap_apps
+  install_node
+  install_mise
   install_lazyvim
 
   # Ensure pipx shims are ready for the current user.
