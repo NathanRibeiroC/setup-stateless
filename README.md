@@ -65,3 +65,7 @@ bash scripts/check.sh
 - Only Ubuntu is currently implemented.
 - Run with a user that has `sudo` access.
 - Script is idempotent and safe to re-run.
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](./LICENSE).
