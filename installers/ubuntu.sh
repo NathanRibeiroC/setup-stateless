@@ -144,6 +144,48 @@ install_snap_apps() {
   $SUDO snap install obsidian --classic
 }
 
+get_target_user() {
+  if [[ -n "${SUDO_USER:-}" && "${SUDO_USER}" != "root" ]]; then
+    printf '%s\n' "${SUDO_USER}"
+  else
+    id -un
+  fi
+}
+
+get_target_home() {
+  local target_user="$1"
+  if [[ "$target_user" == "root" ]]; then
+    printf '/root\n'
+  else
+    getent passwd "$target_user" | cut -d: -f6
+  fi
+}
+
+install_lazyvim() {
+  local target_user target_home nvim_config nvim_data backup_suffix
+
+  target_user="$(get_target_user)"
+  target_home="$(get_target_home "$target_user")"
+  nvim_config="${target_home}/.config/nvim"
+  nvim_data="${target_home}/.local/share/nvim"
+  backup_suffix="setup-stateless-backup"
+
+  log "Installing Neovim via snap..."
+  $SUDO snap install nvim --classic
+
+  if [[ -d "$nvim_config" ]]; then
+    log "Neovim config already exists at ${nvim_config}; skipping LazyVim bootstrap."
+    return
+  fi
+
+  log "Bootstrapping LazyVim starter for user ${target_user}..."
+  if [[ -d "${nvim_data}" ]]; then
+    $SUDO -u "$target_user" mv "${nvim_data}" "${nvim_data}.${backup_suffix}"
+  fi
+  $SUDO -u "$target_user" git clone https://github.com/LazyVim/starter "$nvim_config"
+  $SUDO -u "$target_user" rm -rf "${nvim_config}/.git"
+}
+
 main() {
   require_cmd apt-get
   require_cmd dpkg
@@ -162,6 +204,7 @@ main() {
   install_google_chrome
   install_bitwarden
   install_snap_apps
+  install_lazyvim
 
   # Ensure pipx shims are ready for the current user.
   if command -v pipx >/dev/null 2>&1; then

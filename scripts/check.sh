@@ -11,6 +11,7 @@ required_cmds=(
   zsh
   python3
   pipx
+  nvim
   code
   google-chrome
   bitwarden
@@ -42,6 +43,13 @@ for pkg in "${required_snaps[@]}"; do
     echo "OK snap: $pkg"
   fi
 done
+
+if [[ ! -d "${HOME}/.config/nvim" ]]; then
+  echo "Missing LazyVim config directory: ${HOME}/.config/nvim"
+  missing=1
+else
+  echo "OK LazyVim config directory: ${HOME}/.config/nvim"
+fi
 
 if [[ "$missing" -eq 1 ]]; then
   echo "Validation failed."

@@ -44,11 +44,12 @@ bash <(curl -fsSL https://raw.githubusercontent.com/NathanRibeiroC/setup-statele
 
 ## Installed tools (Ubuntu)
 
-- Core CLI: `curl`, `wget`, `git`, `jq`, `ripgrep`, `fd-find`, `tmux`, `tree`, `zsh`, `xclip`
+- Core CLI: `curl`, `wget`, `git`, `jq`, `ripgrep`, `fd-find`, `tmux`, `tree`, `zsh`, `xclip`, `nvim`
 - Build/tooling: `build-essential`, `make`, `zip`, `unzip`
 - Python: `python3`, `python3-pip`, `pipx`
 - Base system packages: `ca-certificates`, `gnupg`, `lsb-release`, `software-properties-common`, `snapd`
 - Desktop apps: `code`, `google-chrome-stable`, `bitwarden`, `libreoffice`, `notion-snap-reborn` (snap), `obsidian` (snap)
+- Editor setup: LazyVim starter in `~/.config/nvim` (if no existing Neovim config is present)
 
 ## Local usage
 
