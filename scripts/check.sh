@@ -45,6 +45,13 @@ else
   missing=1
 fi
 
+if command -v jetbrains-toolbox >/dev/null 2>&1 || [[ -x "${HOME}/.local/bin/jetbrains-toolbox" ]]; then
+  echo "OK command: jetbrains-toolbox"
+else
+  echo "Missing command: jetbrains-toolbox"
+  missing=1
+fi
+
 for pkg in "${required_snaps[@]}"; do
   if ! snap list "$pkg" >/dev/null 2>&1; then
     echo "Missing snap: $pkg"
