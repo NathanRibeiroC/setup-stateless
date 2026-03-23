@@ -280,8 +280,6 @@ install_lazyvim() {
 main() {
   require_cmd apt-get
   require_cmd dpkg
-  require_cmd curl
-  require_cmd gpg
 
   if ! is_ubuntu; then
     echo "This installer supports Ubuntu systems only."

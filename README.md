@@ -29,6 +29,13 @@ gh auth status
 bash <(curl -fsSL https://raw.githubusercontent.com/NathanRibeiroC/setup-stateless/main/install.sh)
 ```
 
+If `curl` is not installed yet (fresh Ubuntu), run:
+
+```bash
+sudo apt update && sudo apt install -y curl
+bash <(curl -fsSL https://raw.githubusercontent.com/NathanRibeiroC/setup-stateless/main/install.sh)
+```
+
 ## Current support
 
 - `ubuntu` (implemented)
