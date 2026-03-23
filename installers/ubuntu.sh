@@ -11,6 +11,10 @@ log() {
   printf '[setup] %s\n' "$1"
 }
 
+warn() {
+  printf '[setup][warn] %s\n' "$1" >&2
+}
+
 require_cmd() {
   local cmd="$1"
   if ! command -v "$cmd" >/dev/null 2>&1; then
@@ -141,14 +145,17 @@ install_bitwarden() {
   arch="$(dpkg --print-architecture)"
 
   log "Configuring Bitwarden official repository..."
-  $SUDO install -d -m 0755 "$keyring_dir"
-  curl -fsSL https://deb.bitwarden.com/bitwarden.asc | gpg --dearmor | $SUDO tee "$keyring_file" >/dev/null
-  $SUDO chmod a+r "$keyring_file"
-  echo "deb [arch=${arch} signed-by=${keyring_file}] https://deb.bitwarden.com/ stable main" | $SUDO tee "$source_file" >/dev/null
+  if $SUDO install -d -m 0755 "$keyring_dir" \
+    && curl -fsSL https://deb.bitwarden.com/bitwarden.asc | gpg --dearmor | $SUDO tee "$keyring_file" >/dev/null \
+    && $SUDO chmod a+r "$keyring_file" \
+    && echo "deb [arch=${arch} signed-by=${keyring_file}] https://deb.bitwarden.com/ stable main" | $SUDO tee "$source_file" >/dev/null \
+    && $SUDO apt-get update -y \
+    && $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y bitwarden; then
+    return
+  fi
 
-  log "Installing Bitwarden..."
-  $SUDO apt-get update -y
-  $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y bitwarden
+  warn "Bitwarden apt installation failed (network/repository issue). Falling back to snap."
+  $SUDO snap install bitwarden
 }
 
 install_snap_apps() {
