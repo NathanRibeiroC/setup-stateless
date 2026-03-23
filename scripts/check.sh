@@ -45,7 +45,10 @@ else
   missing=1
 fi
 
-if command -v jetbrains-toolbox >/dev/null 2>&1 || [[ -x "${HOME}/.local/bin/jetbrains-toolbox" ]]; then
+if command -v jetbrains-toolbox >/dev/null 2>&1 \
+  || [[ -x "${HOME}/.local/bin/jetbrains-toolbox" ]] \
+  || [[ -x "/usr/local/bin/jetbrains-toolbox" ]] \
+  || [[ -x "/opt/jetbrains-toolbox/jetbrains-toolbox" ]]; then
   echo "OK command: jetbrains-toolbox"
 else
   echo "Missing command: jetbrains-toolbox"
