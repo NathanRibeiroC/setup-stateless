@@ -19,6 +19,16 @@ run_installer() {
   bash "$installer"
 }
 
+run_check() {
+  local check_script="${SCRIPT_DIR}/scripts/check.sh"
+  if [[ ! -x "$check_script" ]]; then
+    chmod +x "$check_script"
+  fi
+  echo
+  echo "[setup] Running post-install validation..."
+  bash "$check_script"
+}
+
 case "${ID:-}" in
   ubuntu)
     run_installer "${SCRIPT_DIR}/installers/ubuntu.sh"
@@ -33,3 +43,5 @@ case "${ID:-}" in
     fi
     ;;
 esac
+
+run_check

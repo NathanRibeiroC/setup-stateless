@@ -64,8 +64,9 @@ bash <(curl -fsSL https://raw.githubusercontent.com/NathanRibeiroC/setup-statele
 
 ```bash
 bash install.sh
-bash scripts/check.sh
 ```
+
+`install.sh` runs `scripts/check.sh` automatically after installation.
 
 ## Post-install validation
 
@@ -75,10 +76,10 @@ Run the full validation:
 bash scripts/check.sh
 ```
 
-Run install + validation in a single command:
+Run install (validation is automatic at the end):
 
 ```bash
-bash install.sh && bash scripts/check.sh
+bash install.sh
 ```
 
 Show only failed/missing checks:
