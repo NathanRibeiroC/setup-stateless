@@ -4,6 +4,10 @@ Stateless Linux bootstrap focused on speed and repeatability.
 
 > Recommended next step: add versioned VS Code configuration files (for example, workspace settings, extensions list, and keybindings) to this repository.
 
+## TODOs
+
+- Ensure `tmux` is installed in our stateless setup.
+
 ## Prerequisites
 
 Before running the installer, make sure your GitHub access is configured from the terminal:
