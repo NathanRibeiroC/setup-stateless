@@ -65,6 +65,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/NathanRibeiroC/setup-statele
 - Base system packages: `ca-certificates`, `gnupg`, `lsb-release`, `software-properties-common`, `snapd`
 - Desktop apps: `code`, `google-chrome-stable`, `brave-browser`, `bitwarden`, `libreoffice`, `notion-snap-reborn` (snap), `obsidian` (snap)
 - Editor setup: LazyVim starter in `~/.config/nvim` (if no existing Neovim config is present)
+- Terminal setup: `alacritty`, `starship`, `JetBrainsMono Nerd Font`, Alacritty theme in `~/.config/alacritty/alacritty.toml`, prompt theme in `~/.config/starship.toml`
 
 ## Local usage
 

@@ -13,3 +13,13 @@ bash <(curl -fsSL https://raw.githubusercontent.com/NathanRibeiroC/setup-statele
 ```bash
 bash install.sh
 ```
+
+## Terminal defaults included
+
+The Ubuntu installer also configures:
+
+- `Alacritty`
+- `Starship`
+- `JetBrainsMono Nerd Font`
+- `~/.config/alacritty/alacritty.toml`
+- `~/.config/starship.toml`

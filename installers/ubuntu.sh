@@ -23,6 +23,39 @@ require_cmd() {
   fi
 }
 
+run_as_target_user() {
+  local target_user="$1"
+  shift
+
+  if [[ "$target_user" == "root" ]]; then
+    bash -lc "$*"
+  else
+    $SUDO -u "$target_user" bash -lc "$*"
+  fi
+}
+
+write_file_as_target_user() {
+  local target_user="$1"
+  local destination="$2"
+
+  if [[ "$target_user" == "root" ]]; then
+    cat > "$destination"
+  else
+    $SUDO -u "$target_user" tee "$destination" >/dev/null
+  fi
+}
+
+append_file_as_target_user() {
+  local target_user="$1"
+  local destination="$2"
+
+  if [[ "$target_user" == "root" ]]; then
+    cat >> "$destination"
+  else
+    $SUDO -u "$target_user" tee -a "$destination" >/dev/null
+  fi
+}
+
 is_ubuntu() {
   if [[ -f /etc/os-release ]]; then
     # shellcheck disable=SC1091
@@ -85,6 +118,7 @@ install_packages() {
     tmux
     tree
     zsh
+    alacritty
     python3
     python3-pip
     pipx
@@ -237,6 +271,161 @@ fi"
   fi
 }
 
+install_starship() {
+  local target_user target_home install_cmd
+
+  target_user="$(get_target_user)"
+  target_home="$(get_target_home "$target_user")"
+
+  log "Installing Starship prompt for user ${target_user}..."
+
+  install_cmd="mkdir -p \"${target_home}/.local/bin\"; \
+if [[ ! -x \"${target_home}/.local/bin/starship\" ]]; then \
+  curl -fsSL https://starship.rs/install.sh | sh -s -- -y -b \"${target_home}/.local/bin\"; \
+fi"
+
+  run_as_target_user "$target_user" "$install_cmd"
+}
+
+install_jetbrains_mono_nerd_font() {
+  local target_user target_home font_dir install_cmd
+
+  target_user="$(get_target_user)"
+  target_home="$(get_target_home "$target_user")"
+  font_dir="${target_home}/.local/share/fonts"
+
+  log "Installing JetBrainsMono Nerd Font for user ${target_user}..."
+
+  install_cmd="mkdir -p \"${font_dir}\"; \
+if ! find \"${font_dir}\" -maxdepth 1 -type f -name 'JetBrainsMono*NerdFont*.ttf' | grep -q .; then \
+  tmp_dir=\$(mktemp -d); \
+  trap 'rm -rf \"\${tmp_dir}\"' EXIT; \
+  curl -fsSL -o \"\${tmp_dir}/JetBrainsMono.zip\" https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip; \
+  unzip -qo \"\${tmp_dir}/JetBrainsMono.zip\" -d \"\${tmp_dir}/fonts\"; \
+  find \"\${tmp_dir}/fonts\" -type f -name '*.ttf' ! -name '*Windows Compatible*' -exec cp {} \"${font_dir}/\" \;; \
+fi; \
+fc-cache -f \"${font_dir}\" >/dev/null 2>&1 || true"
+
+  run_as_target_user "$target_user" "$install_cmd"
+}
+
+configure_alacritty() {
+  local target_user target_home config_dir config_file
+
+  target_user="$(get_target_user)"
+  target_home="$(get_target_home "$target_user")"
+  config_dir="${target_home}/.config/alacritty"
+  config_file="${config_dir}/alacritty.toml"
+
+  log "Writing Alacritty config for user ${target_user}..."
+  $SUDO install -d -m 0755 -o "$target_user" -g "$target_user" "$config_dir"
+  cat <<'EOF' | write_file_as_target_user "$target_user" "$config_file"
+[window]
+opacity = 0.88
+startup_mode = "Maximized"
+decorations = "Full"
+decorations_theme_variant = "Dark"
+
+[window.padding]
+x = 10
+y = 10
+
+[colors.primary]
+background = "#2b3139"
+foreground = "#d6dde5"
+
+[colors.cursor]
+text = "#2b3139"
+cursor = "#d6dde5"
+
+[colors.selection]
+text = "#d6dde5"
+background = "#46515d"
+
+[font]
+size = 12.5
+builtin_box_drawing = true
+
+[font.normal]
+family = "JetBrainsMono Nerd Font"
+style = "Regular"
+
+[font.bold]
+family = "JetBrainsMono Nerd Font"
+style = "Bold"
+
+[font.italic]
+family = "JetBrainsMono Nerd Font"
+style = "Italic"
+
+[font.bold_italic]
+family = "JetBrainsMono Nerd Font"
+style = "Bold Italic"
+
+[cursor]
+style = { shape = "Beam", blinking = "On" }
+blink_interval = 700
+unfocused_hollow = true
+
+[scrolling]
+history = 20000
+multiplier = 3
+
+[selection]
+save_to_clipboard = true
+
+[bell]
+animation = "EaseOut"
+duration = 0
+command = "None"
+EOF
+}
+
+configure_starship() {
+  local target_user target_home bashrc starship_dir starship_config
+
+  target_user="$(get_target_user)"
+  target_home="$(get_target_home "$target_user")"
+  bashrc="${target_home}/.bashrc"
+  starship_dir="${target_home}/.config"
+  starship_config="${starship_dir}/starship.toml"
+
+  log "Writing Starship config for user ${target_user}..."
+  $SUDO install -d -m 0755 -o "$target_user" -g "$target_user" "$starship_dir"
+  run_as_target_user "$target_user" "touch \"${bashrc}\""
+  cat <<'EOF' | write_file_as_target_user "$target_user" "$starship_config"
+add_newline = false
+
+format = "$directory$git_branch$git_status$line_break$character"
+
+[directory]
+style = "bold #8aa4bf"
+truncate_to_repo = false
+
+[git_branch]
+symbol = " "
+style = "bold #a7c080"
+format = "[$symbol$branch]($style) "
+
+[git_status]
+style = "bold #d6996e"
+format = "([$all_status$ahead_behind]($style)) "
+
+[character]
+success_symbol = "[>](bold #d6dde5)"
+error_symbol = "[>](bold #e67e80)"
+vimcmd_symbol = "[<](bold #7fbbb3)"
+EOF
+
+  if ! grep -Fqx 'export PATH="$PATH:$HOME/.local/bin"' "$bashrc"; then
+    printf '\nexport PATH="$PATH:$HOME/.local/bin"\n' | append_file_as_target_user "$target_user" "$bashrc"
+  fi
+
+  if ! grep -Fqx 'eval "$(starship init bash)"' "$bashrc"; then
+    printf 'eval "$(starship init bash)"\n' | append_file_as_target_user "$target_user" "$bashrc"
+  fi
+}
+
 install_lazyvim() {
   local target_user target_home nvim_config nvim_data backup_suffix
 
@@ -282,6 +471,10 @@ main() {
   install_snap_apps
   install_node
   install_mise
+  install_starship
+  install_jetbrains_mono_nerd_font
+  configure_starship
+  configure_alacritty
   install_lazyvim
 
   # Ensure pipx shims are ready for the current user.
