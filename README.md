@@ -65,6 +65,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/NathanRibeiroC/setup-statele
 - Base system packages: `ca-certificates`, `gnupg`, `lsb-release`, `software-properties-common`, `snapd`
 - Desktop apps: `code`, `google-chrome-stable`, `brave-browser`, `bitwarden`, `libreoffice`, `notion-snap-reborn` (snap), `obsidian` (snap)
 - Cloud sync: `rclone` with a user `systemd` unit for Google Drive mounting at `~/GoogleDrive`
+- Startup automation: a system `systemd` unit refreshes `notion-snap-reborn` and `obsidian` on each boot
 - Editor setup: LazyVim starter in `~/.config/nvim` (if no existing Neovim config is present)
 - Terminal setup: `alacritty`, `starship`, `JetBrainsMono Nerd Font`, Alacritty theme in `~/.config/alacritty/alacritty.toml`, prompt theme in `~/.config/starship.toml`
 
@@ -102,6 +103,7 @@ bash scripts/check.sh 2>&1 | rg "Missing|failed" -i
 - Run with a user that has `sudo` access.
 - Script is idempotent and safe to re-run.
 - Google Drive credentials are not versioned. After install, run `rclone config`, create a remote named `gdrive`, and restart `gdrive-rclone.service`.
+- Notion and Obsidian already support snap auto-refresh, but this setup also forces a boot-time refresh check through `startup-snap-refresh.service`.
 
 ## License
 

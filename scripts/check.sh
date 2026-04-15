@@ -28,6 +28,10 @@ required_snaps=(
   obsidian
 )
 
+required_systemd_units=(
+  startup-snap-refresh.service
+)
+
 ok_items=()
 failed_items=()
 
@@ -58,6 +62,14 @@ for pkg in "${required_snaps[@]}"; do
     add_ok "Snap: $pkg"
   else
     add_failed "Snap: $pkg"
+  fi
+done
+
+for unit in "${required_systemd_units[@]}"; do
+  if systemctl is-enabled "$unit" >/dev/null 2>&1; then
+    add_ok "Systemd unit enabled: $unit"
+  else
+    add_failed "Systemd unit enabled: $unit"
   fi
 done
 

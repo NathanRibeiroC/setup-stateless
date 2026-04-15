@@ -56,3 +56,21 @@ systemctl --user status gdrive-rclone.service
 systemctl --user stop gdrive-rclone.service
 systemctl --user start gdrive-rclone.service
 ```
+
+## Startup Updates For Notion And Obsidian
+
+The Ubuntu installer also creates and enables a system service named `startup-snap-refresh.service`.
+
+At every boot, it waits for `snapd` seeding to finish and then runs:
+
+```bash
+sudo snap refresh notion-snap-reborn obsidian
+```
+
+Useful commands:
+
+```bash
+systemctl status startup-snap-refresh.service
+sudo systemctl start startup-snap-refresh.service
+journalctl -u startup-snap-refresh.service -n 50 --no-pager
+```

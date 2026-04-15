@@ -211,6 +211,29 @@ install_snap_apps() {
   $SUDO snap install obsidian --classic
 }
 
+configure_startup_snap_refresh() {
+  local service_file="/etc/systemd/system/startup-snap-refresh.service"
+
+  log "Configuring startup refresh for Notion and Obsidian snaps..."
+  cat <<'EOF' | $SUDO tee "$service_file" >/dev/null
+[Unit]
+Description=Refresh Notion and Obsidian snaps at boot
+Wants=network-online.target
+After=network-online.target snapd.service snapd.seeded.service
+
+[Service]
+Type=oneshot
+ExecStartPre=/usr/bin/snap wait system seed.loaded
+ExecStart=/usr/bin/snap refresh notion-snap-reborn obsidian
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+  $SUDO systemctl daemon-reload
+  $SUDO systemctl enable startup-snap-refresh.service
+}
+
 get_target_user() {
   if [[ -n "${SUDO_USER:-}" && "${SUDO_USER}" != "root" ]]; then
     printf '%s\n' "${SUDO_USER}"
@@ -526,6 +549,7 @@ main() {
   install_brave
   install_bitwarden
   install_snap_apps
+  configure_startup_snap_refresh
   install_node
   install_mise
   install_starship
