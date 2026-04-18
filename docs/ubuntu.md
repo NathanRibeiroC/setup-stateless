@@ -5,7 +5,7 @@ This repository currently supports Ubuntu through `installers/ubuntu.sh`.
 ## Direct execution from GitHub
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/NathanRibeiroC/setup-stateless/main/install.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/NathanRibeiroC/stateless-setup/main/install.sh)
 ```
 
 ## Local execution

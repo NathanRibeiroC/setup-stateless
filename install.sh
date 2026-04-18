@@ -11,6 +11,22 @@ fi
 # shellcheck disable=SC1091
 . /etc/os-release
 
+is_wsl() {
+  if [[ -n "${WSL_DISTRO_NAME:-}" ]]; then
+    return 0
+  fi
+
+  if [[ -f /proc/sys/kernel/osrelease ]] && grep -qi microsoft /proc/sys/kernel/osrelease; then
+    return 0
+  fi
+
+  if [[ -f /proc/version ]] && grep -qi microsoft /proc/version; then
+    return 0
+  fi
+
+  return 1
+}
+
 run_installer() {
   local installer="$1"
   if [[ ! -x "$installer" ]]; then
@@ -31,14 +47,22 @@ run_check() {
 
 case "${ID:-}" in
   ubuntu)
-    run_installer "${SCRIPT_DIR}/installers/ubuntu.sh"
+    if is_wsl; then
+      run_installer "${SCRIPT_DIR}/installers/wsl-ubuntu.sh"
+    else
+      run_installer "${SCRIPT_DIR}/installers/ubuntu.sh"
+    fi
     ;;
   *)
     if [[ "${ID_LIKE:-}" == *"ubuntu"* || "${ID_LIKE:-}" == *"debian"* ]]; then
-      run_installer "${SCRIPT_DIR}/installers/ubuntu.sh"
+      if is_wsl; then
+        run_installer "${SCRIPT_DIR}/installers/wsl-ubuntu.sh"
+      else
+        run_installer "${SCRIPT_DIR}/installers/ubuntu.sh"
+      fi
     else
       echo "Unsupported distribution: ${ID:-unknown}"
-      echo "Currently supported: ubuntu"
+      echo "Currently supported: ubuntu, ubuntu on WSL"
       exit 1
     fi
     ;;

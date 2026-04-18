@@ -1,4 +1,4 @@
-# setup-stateless
+# stateless-setup
 
 Stateless Linux bootstrap focused on speed and repeatability.
 
@@ -29,29 +29,50 @@ gpg --armor --export <YOUR_KEY_ID> | gh gpg-key add -
 gh auth status
 ```
 
-## One-liner (run directly from GitHub)
+## Windows / WSL bootstrap
+
+For a fresh Windows machine, clone this repository on Windows and run the WSL bootstrap from an elevated PowerShell session:
+
+```powershell
+Set-ExecutionPolicy -Scope Process Bypass -Force
+.\installers\wsl-ubuntu.ps1 -LinuxUser nathan
+```
+
+What this does:
+
+- Installs WSL 2 and the `Ubuntu` distro if they are not present yet
+- Creates your Linux user and grants passwordless `sudo` for bootstrap speed
+- Runs `bash install.sh` inside Ubuntu WSL
+- Writes `/etc/wsl.conf` with `systemd=true` and sets the default WSL user
+
+If Windows asks for a reboot because WSL was enabled for the first time, reboot and rerun the same PowerShell command.
+
+## Linux one-liner (run directly from GitHub)
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/NathanRibeiroC/setup-stateless/main/install.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/NathanRibeiroC/stateless-setup/main/install.sh)
 ```
 
 If `curl` is not installed yet (fresh Ubuntu), run:
 
 ```bash
 sudo apt update && sudo apt install -y curl
-bash <(curl -fsSL https://raw.githubusercontent.com/NathanRibeiroC/setup-stateless/main/install.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/NathanRibeiroC/stateless-setup/main/install.sh)
 ```
 
 ## Current support
 
-- `ubuntu` (implemented)
+- `ubuntu` (desktop/server Ubuntu)
+- `ubuntu-wsl` (Ubuntu running inside WSL on Windows)
 - `fedora` (planned)
 - `gentoo` (planned)
 
 ## Installers layout
 
 - `install.sh` (distribution dispatcher)
-- `installers/ubuntu.sh` (Ubuntu implementation)
+- `installers/ubuntu.sh` (Ubuntu desktop/server implementation)
+- `installers/wsl-ubuntu.sh` (Ubuntu-on-WSL implementation)
+- `installers/wsl-ubuntu.ps1` (Windows bootstrapper for WSL + Ubuntu + Linux bootstrap)
 - `installers/fedora.sh` (future)
 - `installers/gentoo.sh` (future)
 
@@ -69,13 +90,25 @@ bash <(curl -fsSL https://raw.githubusercontent.com/NathanRibeiroC/setup-statele
 - Editor setup: LazyVim starter in `~/.config/nvim` (if no existing Neovim config is present)
 - Terminal setup: `alacritty`, `starship`, `JetBrainsMono Nerd Font`, Alacritty theme in `~/.config/alacritty/alacritty.toml`, prompt theme in `~/.config/starship.toml`
 
+## Installed tools (Ubuntu WSL)
+
+- Core CLI: `curl`, `wget`, `git`, `jq`, `ripgrep`, `fd-find`, `tmux`, `tree`, `zsh`, `neovim`
+- Build/tooling: `build-essential`, `make`, `zip`, `unzip`
+- Python: `python3`, `python3-pip`, `pipx`
+- JavaScript/Node: `nvm` + latest `node` and `npm`
+- Runtime manager: `mise` (installed to `~/.local/bin/mise`)
+- Shell setup: `starship`, `~/.config/starship.toml`, `~/.bashrc` entries for `~/.local/bin`, `nvm`, and prompt init
+- WSL defaults: `/etc/wsl.conf` with `systemd=true` and the configured default user
+- Cloud sync: `rclone`
+- Editor setup: LazyVim starter in `~/.config/nvim` (if no existing Neovim config is present)
+
 ## Local usage
 
 ```bash
 bash install.sh
 ```
 
-`install.sh` runs `scripts/check.sh` automatically after installation.
+`install.sh` auto-detects when it is running inside WSL and switches to the WSL-specific installer. It also runs `scripts/check.sh` automatically after installation.
 
 ## Post-install validation
 
@@ -99,11 +132,13 @@ bash scripts/check.sh 2>&1 | rg "Missing|failed" -i
 
 ## Notes
 
-- Only Ubuntu is currently implemented.
+- Only Ubuntu and Ubuntu-on-WSL are currently implemented.
 - Run with a user that has `sudo` access.
 - Script is idempotent and safe to re-run.
 - Google Drive credentials are not versioned. After install, run `rclone config`, create a remote named `gdrive`, and restart `gdrive-rclone.service`.
 - Notion and Obsidian already support snap auto-refresh, but this setup also forces a boot-time refresh check through `startup-snap-refresh.service`.
+- The WSL bootstrap intentionally configures passwordless `sudo` for the chosen Linux user so a fresh Windows machine can be provisioned without interactive Linux password prompts.
+- WSL-specific details are documented in [docs/wsl-ubuntu.md](./docs/wsl-ubuntu.md). Desktop Ubuntu details stay in [docs/ubuntu.md](./docs/ubuntu.md).
 
 ## License
 
