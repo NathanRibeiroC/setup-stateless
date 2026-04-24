@@ -35,6 +35,7 @@ required_cmds_desktop=(
   google-chrome
   brave-browser
   bitwarden
+  dbeaver
   libreoffice
   snap
 )
@@ -53,6 +54,7 @@ required_cmds_wsl=(
   node
   npm
   nvim
+  dbeaver
 )
 
 required_snaps=(

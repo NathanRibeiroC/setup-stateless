@@ -84,7 +84,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/NathanRibeiroC/stateless-set
 - JavaScript/Node: `nvm` + latest `node` and `npm`
 - Runtime manager: `mise` (installed to `~/.local/bin/mise`)
 - Base system packages: `ca-certificates`, `gnupg`, `lsb-release`, `software-properties-common`, `snapd`
-- Desktop apps: `code`, `google-chrome-stable`, `brave-browser`, `bitwarden`, `libreoffice`, `notion-snap-reborn` (snap), `obsidian` (snap)
+- Desktop apps: `code`, `google-chrome-stable`, `brave-browser`, `bitwarden`, `dbeaver-ce`, `libreoffice`, `notion-snap-reborn` (snap), `obsidian` (snap)
 - Cloud sync: `rclone` with a user `systemd` unit for Google Drive mounting at `~/GoogleDrive`
 - Startup automation: a system `systemd` unit refreshes `notion-snap-reborn` and `obsidian` on each boot
 - Editor setup: LazyVim starter in `~/.config/nvim` (if no existing Neovim config is present)
@@ -97,6 +97,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/NathanRibeiroC/stateless-set
 - Python: `python3`, `python3-pip`, `pipx`
 - JavaScript/Node: `nvm` + latest `node` and `npm`
 - Runtime manager: `mise` (installed to `~/.local/bin/mise`)
+- Database client: `dbeaver-ce`
 - Shell setup: `starship`, `~/.config/starship.toml`, `~/.bashrc` entries for `~/.local/bin`, `nvm`, and prompt init
 - WSL defaults: `/etc/wsl.conf` with `systemd=true` and the configured default user
 - Cloud sync: `rclone`

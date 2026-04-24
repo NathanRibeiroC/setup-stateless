@@ -205,6 +205,20 @@ install_bitwarden() {
   $SUDO snap install bitwarden
 }
 
+install_dbeaver() {
+  local keyring_file="/usr/share/keyrings/dbeaver.gpg"
+  local source_file="/etc/apt/sources.list.d/dbeaver.list"
+
+  log "Configuring DBeaver CE official repository..."
+  curl -fsSL https://dbeaver.io/debs/dbeaver.gpg.key | gpg --dearmor | $SUDO tee "$keyring_file" >/dev/null
+  $SUDO chmod a+r "$keyring_file"
+  echo "deb [signed-by=${keyring_file}] https://dbeaver.io/debs/dbeaver-ce /" | $SUDO tee "$source_file" >/dev/null
+
+  log "Installing DBeaver CE..."
+  $SUDO apt-get update -y
+  $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y dbeaver-ce
+}
+
 install_snap_apps() {
   log "Installing Notion and Obsidian via snap..."
   $SUDO snap install notion-snap-reborn
@@ -548,6 +562,7 @@ main() {
   install_google_chrome
   install_brave
   install_bitwarden
+  install_dbeaver
   install_snap_apps
   configure_startup_snap_refresh
   install_node
